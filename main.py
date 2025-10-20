@@ -9,25 +9,30 @@ def parse_apache_file(filepath):
     # Regex to extract IP and status code
     pattern = re.compile(r'^(\d{1,3}(?:\.\d{1,3}){3})\s.*"\s*(\d{3})\s')
 
-    # Structure: {ip: {"total": int, "errors": int}}
-    log_dict = {}
-    with open(filepath, "r") as log:
-        for line in log:
-            match = pattern.search(line)
-            if match:
-                ip = match.group(1)
-                status = match.group(2)
+    try:
+        # Structure: {ip: {"total": int, "errors": int}}
+        log_dict = {}
+        with open(filepath, "r") as log:
+            for line in log:
+                match = pattern.search(line)
+                if match:
+                    ip = match.group(1)
+                    status = match.group(2)
 
-                if ip not in log_dict:
-                    log_dict[ip] = {"total": 0, "errors": 0}
+                    if ip not in log_dict:
+                        log_dict[ip] = {"total": 0, "errors": 0}
 
-                log_dict[ip]["total"] += 1
+                    log_dict[ip]["total"] += 1
 
-                # Check for 4xx or 5xx errors
-                if status.startswith(("4", "5")):
-                    log_dict[ip]["errors"] += 1
+                    # Check for 4xx or 5xx errors
+                    if status.startswith(("4", "5")):
+                        log_dict[ip]["errors"] += 1
 
-    return log_dict
+        return log_dict
+
+    except FileNotFoundError:
+        print(f"\n[!] ERROR: The file '{filepath}' was not found.\n")
+        return None
 
 
 def generate_report(log_dict):
@@ -58,34 +63,24 @@ def main():
     parser.add_argument("-f", "--file", required=True, help="Path to the Apache access log file.")
     args = parser.parse_args()
 
-    # Prompt for log file path
+    # Get the log file path from the arguments
     log_file = args.file
+
     print(f"[*] Processing log file: {log_file}...")
     print()
 
-    # 1. Call the engine to retrieve the data
+    # Call the engine to retrieve the data
     final_data = parse_apache_file(log_file)
 
-    # 2. Call the presenter to print the report
-    generate_report(final_data)
-    print()
+    # Proceed only if the data was successfully returned
+    if final_data:
+        generate_report(final_data)
+        print("\n[*] Analysis complete!")
 
-    print("[*] Analysis complete!")
+    else:
+        print(f"[*] Analysis aborted due to error.")
 
 
+# ----------- Main ------------------ #
 if __name__ == "__main__":
     main()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
