@@ -54,4 +54,5 @@ A lightweight, command-line utility built with Python for parsing Apache web ser
 Run the script from the command line, providing the path to the log file you wish to analyse using the `-f` or `--file` argument.
 
 ```bash
-python your_script_name.py --file /path/to/your/access.log
+python main.py --file /path/to/your/access.log
+```
