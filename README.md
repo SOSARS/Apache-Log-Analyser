@@ -6,7 +6,7 @@ A lightweight, command-line utility built with Python for parsing Apache web ser
 
 ## 📸 Demo
 
-![PyLog Threat Analyser Demo](demo.png)
+![PyLog Threat Analyser Demo](apache-log-result.png)
 
 ---
 
