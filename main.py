@@ -1,4 +1,5 @@
 import re
+import csv
 import argparse
 from beautifultable import BeautifulTable
 
@@ -35,9 +36,28 @@ def parse_apache_file(filepath):
         return None
 
 
-def generate_report(log_dict):
+def export_to_csv(sorted_data, filepath):
+    """Takes the sorted data and a filename
+    and writes the content to a csv file."""
+    fields = ["IP Address", "Total Requests", "Errors"]
+
+    try:
+        with open(filepath, "w", newline="", encoding="utf-8") as csv_file:
+            writer = csv.writer(csv_file)
+            writer.writerow(fields)  # Header row
+
+            for ip, stats in sorted_data:  # Loops through the sorted list
+                writer.writerow([ip, stats["total"], stats["errors"]])
+
+        print(f"\n[+] Report successfully exported to {filepath}")
+
+    except IOError:
+        print(f"\n[!] ERROR: Could not write to '{filepath}'. Check permissions.\n")
+
+
+
+def generate_report(sorted_data):
     """Takes IP data and prints a formatted report."""
-    sorted_ips = sorted(log_dict.items(), key=lambda item: item[1]["errors"], reverse=True)
 
     # Create the table and set the headers
     table = BeautifulTable()
@@ -45,7 +65,7 @@ def generate_report(log_dict):
     table.columns.alignment["IP Address"] = BeautifulTable.ALIGN_LEFT
 
     # Loop through the sorted data and add rows to the table
-    for ip, data in sorted_ips:
+    for ip, data in sorted_data:
         table.rows.append([ip, data["total"], data["errors"]])
 
     # Print the final table
@@ -61,6 +81,7 @@ def main():
 
     # Add the --file argument
     parser.add_argument("-f", "--file", required=True, help="Path to the Apache access log file.")
+    parser.add_argument("-o", "--output", required=False, help="Path to the output file.")
     args = parser.parse_args()
 
     # Get the log file path from the arguments
@@ -74,7 +95,11 @@ def main():
 
     # Proceed only if the data was successfully returned
     if final_data:
-        generate_report(final_data)
+        sorted_ips = sorted(final_data.items(), key=lambda item: item[1]["errors"], reverse=True)
+        generate_report(sorted_ips)
+
+        if args.output:
+            export_to_csv(sorted_ips, args.output)
         print("\n[*] Analysis complete!")
 
     else:
@@ -84,3 +109,4 @@ def main():
 # ----------- Main ------------------ #
 if __name__ == "__main__":
     main()
+
