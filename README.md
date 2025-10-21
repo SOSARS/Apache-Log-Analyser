@@ -16,6 +16,7 @@ A lightweight, command-line utility built with Python for parsing Apache web ser
 * **Error Identification:** Detects and flags both client-side (`4xx`) and server-side (`5xx`) errors.
 * **Threat Summarisation:** Aggregates total requests and error counts for each unique IP address.
 * **Prioritised Reporting:** Automatically sorts the output to display the IP addresses with the highest error counts at the top.
+* **CSV Export**: Provides an optional argument to save the final report to a clean CSV file for analysis in other tools.
 * **Professional CLI:** Utilises `argparse` for a clean and user-friendly command-line interface.
 * **Formatted Output:** Presents the final report in a clean, human-readable table using `beautifultable`.
 
@@ -27,14 +28,19 @@ A lightweight, command-line utility built with Python for parsing Apache web ser
 * **Core Libraries:**
     * `argparse` for command-line argument parsing.
     * `beautifultable` for formatted console output.
+    * `csv` (built-in) for file exporting.
 
 ---
 
 ## ⚙️ Installation & Setup
 
 1.  **Clone the repository:**
-    ```bash
+    ```Bash
     git clone [https://github.com/Sosars/Apache-Log-Analyser.git](https://github.com/Sosars/Apache-Log-Analyser.git)
+    ```
+
+    ```PowerShell
+    git clone https://github.com/Sosars/Apache-Log-Analyser.git
     ```
 
 2.  **Navigate to the project directory:**
@@ -43,8 +49,12 @@ A lightweight, command-line utility built with Python for parsing Apache web ser
     ```
 
 3.  **Install the required packages:**
-    ```bash
+    ```PowerShell
     py -m pip install beautifultable
+    ```
+
+    ```Bash
+    python3 pip install beautifultable
     ```
 
 ---
@@ -54,5 +64,5 @@ A lightweight, command-line utility built with Python for parsing Apache web ser
 Run the script from the command line, providing the path to the log file you wish to analyse using the `-f` or `--file` argument.
 
 ```bash
-python main.py --file /path/to/your/access.log
+python main.py -f apache.txt -o report.csv
 ```
