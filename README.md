@@ -1,24 +1,25 @@
 # PyLog Threat Analyser 🐍
 
-A lightweight, command-line utility built with Python for parsing Apache web server logs to identify and summarise potential threats based on HTTP error codes. This tool is designed to quickly provide a high-level overview of suspicious activity by identifying top offenders.
+A command-line utility built with Python for parsing Apache web server logs. It enriches the data by querying the AbuseIPDB API for IP reputations, using a persistent SQLite cache to minimise redundant API calls and improve performance.
+
+The tool identifies and summarises potential threats based on HTTP error codes and known malicious IP addresses, presenting a clean, prioritised report.
 
 ---
 
 ## 📸 Demo
 
-![PyLog Threat Analyser Demo](apache-log-result.png)
+![PyLog Threat Analyser Demo](demo.png)
 
 ---
 
-## ✨ Key Features
+## 🗽 Key Features
 
-* **Log Parsing:** Efficiently reads and processes standard Apache `access.log` files line by line.
-* **Error Identification:** Detects and flags both client-side (`4xx`) and server-side (`5xx`) errors.
-* **Threat Summarisation:** Aggregates total requests and error counts for each unique IP address.
+* **Log Parsing:** Efficiently reads and processes standard Apache `access.log` files.
+* **Threat Intelligence Enrichment:** Queries the AbuseIPDB API to fetch the abuse confidence score and country of origin for offending IPs.
+* **Persistent SQLite Caching:** Caches API lookups in a local `ip_cache.db` file. This makes subsequent scans of overlapping IPs almost instant and respects API rate limits.
 * **Prioritised Reporting:** Automatically sorts the output to display the IP addresses with the highest error counts at the top.
-* **CSV Export**: Provides an optional argument to save the final report to a clean CSV file for analysis in other tools.
-* **Professional CLI:** Utilises `argparse` for a clean and user-friendly command-line interface.
-* **Formatted Output:** Presents the final report in a clean, human-readable table using `beautifultable`.
+* **CSV Export:** Provides an optional argument to save the final, enriched report to a clean CSV file.
+* **Professional CLI:** Utilises `argparse` for a clean, user-friendly command-line interface with optional flags.
 
 ---
 
@@ -26,20 +27,18 @@ A lightweight, command-line utility built with Python for parsing Apache web ser
 
 * **Language:** Python 3
 * **Core Libraries:**
-    * `argparse` for command-line argument parsing.
+    * `requests` for making API calls.
+    * `sqlite3` (built-in) for the persistent cache database.
+    * `python-dotenv` for securely managing API keys.
+    * `argparse` for the command-line interface.
     * `beautifultable` for formatted console output.
-    * `csv` (built-in) for file exporting.
 
 ---
 
 ## ⚙️ Installation & Setup
 
 1.  **Clone the repository:**
-    ```Bash
-    git clone [https://github.com/Sosars/Apache-Log-Analyser.git](https://github.com/Sosars/Apache-Log-Analyser.git)
-    ```
-
-    ```PowerShell
+    ```bash
     git clone https://github.com/Sosars/Apache-Log-Analyser.git
     ```
 
@@ -49,20 +48,34 @@ A lightweight, command-line utility built with Python for parsing Apache web ser
     ```
 
 3.  **Install the required packages:**
-    ```PowerShell
-    py -m pip install beautifultable
+    ```bash
+    py -m pip install -r requirements.txt
     ```
 
-    ```Bash
-    python3 pip install beautifultable
-    ```
+4.  **Set up your environment file:**
+    * Create a file named `.env` in the project directory.
+    * Add your AbuseIPDB API key to it like this:
+        ```text
+        API_KEY="your_api_key_goes_here"
+        ```
 
 ---
 
 ## 🚀 Usage
 
-Run the script from the command line, providing the path to the log file you wish to analyse using the `-f` or `--file` argument.
+Run the script from the command line, providing the path to the log file.
 
-```bash
-python log_analyser.py -f apache.txt -o report.csv
+**Basic Usage (no enrichment):**
+```bash / PowerShell
+py log_analyser.py -f access.log
+```
+
+**Enrichment Run (try it out! 😁):**
+```bash / PowerShell
+py log_analyser.py -f access.log --enrich
+```
+
+**Enrichment w/ CSV Export:**
+```bash / PowerShell
+py log_analyser.py -f access.log --enrich -o threat_report.csv
 ```
