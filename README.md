@@ -90,7 +90,7 @@ ip_cache.db          → Stores persistent threat intelligence
 ---
 
 ## 🙋🏽‍♂️ SOSARS' Note
-I'm building this as a security enthusiast on a journey to making the world safer for everyone.
+I'm building this as a security enthusiast on a journey to making the world a safer place to roam, one step at a time.
 
 ---
 
