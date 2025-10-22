@@ -35,3 +35,72 @@ It’s designed to replicate the early stages of *threat triage* that a SOC (Sec
 git clone https://github.com/Sosars/Apache-Log-Analyser.git
 cd Apache-Log-Analyser
 pip install -r requirements.txt
+```
+
+---
+
+## Set your API key up
+Create a `.env` file in the project root:
+```env
+API_KEY="your_abuseipdb_api_key"
+```
+
+## 🧑🏽‍💻 Basic Scan
+```bash / PowerShell
+py log_analyser.py -f access.log
+```
+
+## 🕵🏽 Enriched Scan (try it out 😁)
+``` bash / PowerShell
+py log_analyser.py -f access.log --enrich
+```
+
+## 👽 Enriched Scan + CSV Export
+``` bash / PowerShell
+py log_analyser.py -f access.log --enrich -o report.csv
+```
+
+## 🗃️ Example Output
+```
+------------------ [!] ATTACKER REPORT ------------------
++-----------------+-----------------+--------+--------------+----------+
+| IP Address      | Total Requests  | Errors | Abuse Score  | Country  |
++-----------------+-----------------+--------+--------------+----------+
+| 45.155.205.12   | 84              | 60     | 95           | RU       |
+| 102.45.19.56    | 10              | 8      | 0            | ZA       |
+| 173.248.16.77   | 4               | 3      | 70           | US       |
++-----------------+-----------------+--------+--------------+----------+
+```
+
+---
+
+
+## 🏗️ Architecture
+```
+access.log
+   │
+   ▼
+file_parser.py       → Parses log & counts IP activity
+enrichment.py        → Checks cache → queries AbuseIPDB → updates DB
+reporting.py         → Displays CLI table / exports CSV
+log_analyser.py      → Orchestrates CLI, enrichment, and reporting
+ip_cache.db          → Stores persistent threat intelligence
+```
+
+---
+
+## 🙋🏽‍♂️ SOSARS' Note
+I'm building this as a security enthusiast on a journey to making the world safer for everyone.
+
+---
+
+## 📜 License
+MIT Licence © 2025 SOSARS
+
+---
+
+## 👨🏽‍🔬 Recruiter Note
+This project demonstrates practical skills in log analysis, threat intelligence, and automation — the same techniques used by SOC analysts and security engineers to detect and prioritise malicious activity in production environments.
+
+
+
