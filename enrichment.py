@@ -41,11 +41,6 @@ def get_ip_reputation(ip_address: str, api_key: str) -> tuple[int, str]:
         # Check if the request is successful
         if response.status_code == 200:
             data = response.json()["data"]
-
-            # --- Line for debugging ---
-            print(f"--- RAW API RESPONSE for {ip_address} ---")
-            print(data)
-
             score = data["abuseConfidenceScore"]
             country = data["countryCode"]
             return (score, country)

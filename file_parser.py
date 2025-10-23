@@ -5,7 +5,8 @@ def parse_apache_file(filepath):
     """Reads an Apache log file and returns a dictionary of IP data"""
 
     # Regex to extract IP and status code
-    pattern = re.compile(r'^(\d{1,3}(?:\.\d{1,3}){3})\s.*"\s*(\d{3})\s')
+    # Supports IPv6
+    pattern = re.compile(r'(\b\d{1,3}(?:\.\d{1,3}){3}\b|\b[a-fA-F0-9:]+\b).*"\s*(\d{3})\s')
 
     try:
         # Structure: {ip: {"total": int, "errors": int}}

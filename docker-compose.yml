@@ -1,0 +1,11 @@
+# docker-compose.yml
+
+# Defining a "service" or application named "app"
+services:
+  app:
+    # This tells Compose to build the image from the Dockerfile in the current directory
+    build: .
+    # This is the same as the -v volume mount
+    volumes:
+      - ./access.log:/app/access.log
+      - ./ip_cache.db:/app/ip_cache.db  # Ensures the cache remains persistent
