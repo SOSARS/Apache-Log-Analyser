@@ -63,7 +63,7 @@ docker-compose run --rm app -f access.log --enrich -o report.csv
 
 ---
 
-## Manual Installation (Alternative)
+## 🤠 Manual Installation (Alternative)
 If you prefer not to use Docker, you can run the script locally.
 
 ### 1. Setup
