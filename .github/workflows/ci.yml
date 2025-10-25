@@ -1,0 +1,40 @@
+# .github/workflows/ci.yml
+
+# 1. Name the workflow
+name: Python Application CI
+
+# 2. When to run this workflow
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+
+# 3. What jobs to run
+jobs:
+  build:
+    # The type of machine to run the job on
+    runs-on: ubuntu-latest
+
+    # The steps to perform
+    steps:
+    # Step 1: Check the repository's code so the job can access it
+    - uses: actions/checkout@v3
+
+    # Step 2: Initialises a specific version of Python
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    # Step 3: Install dependencies from the requirements.txt file
+    - name: Install dependencies from requirements.txt file
+      run: |
+        python -m pip intall --upgrade pip
+        python -m pip install -r requirements.txt
+
+    # Step 4: Run the tests using pytest
+    - name: Run tests with pytest
+      run: |
+        python -m pytest
