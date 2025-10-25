@@ -31,7 +31,7 @@ jobs:
     # Step 3: Install dependencies from the requirements.txt file
     - name: Install dependencies from requirements.txt file
       run: |
-        python -m pip intall --upgrade pip
+        python -m pip install --upgrade pip
         python -m pip install -r requirements.txt
 
     # Step 4: Run the tests using pytest
