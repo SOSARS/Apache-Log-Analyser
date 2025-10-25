@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 from file_parser import parse_apache_file
 from reporting import generate_report, export_to_csv
 from enrichment import check_cache, get_ip_reputation, update_cache
+from anomaly_detector import detect_anomalies
 
 
 def setup_database():
@@ -45,48 +46,42 @@ def main():
     db_connection = setup_database()
 
     print(f"[*] Processing log file: {args.file}...")
-    final_data = parse_apache_file(args.file)
 
-    if final_data:
-        sorted_ips = sorted(final_data.items(), key=lambda item: item[1]["errors"], reverse=True)
+    log_dict = parse_apache_file(args.file)
 
-        # --- Enrichment Logic ---
+    if log_dict:
+        # Run anomaly detection first to get the set of weird IPs
+        anomalous_ips = detect_anomalies(log_dict)
+
+        # Sort the data after running the model
+        sorted_ips = sorted(log_dict.items(), key=lambda item: item[1]["errors"], reverse=True)
+
         report_data = []
-        if args.enrich:
-            if not api_key:
-                print("[!] Enrichment enabled, but no API key found. Skipping.")
+        print("[*] Processing IP data...")
 
-                # Default to non-enriched data
-                report_data = [(ip, data["total"], data["errors"], "N/A", "N/A") for ip, data in sorted_ips]
-            else:
-                print("[*] Starting IP reputation enrichment...")
-                for ip, data in sorted_ips:
 
-                    # 1. Check local cache first
-                    cached_result = check_cache(ip, db_connection)
-                    if cached_result:
-                        score, country = cached_result
-                        print(f"  [CACHE] Found {ip} in local DB.")
+        for ip, data in sorted_ips:
+            score, country = "N/A", "N/A"  # Default values
 
-                    else:
-                        # 2. If not in cache, call API
-                        print(f"  [API] Querying AbuseIPDB for {ip}...")
-                        score, country = get_ip_reputation(ip, api_key)
+            # Check for enrichment if the flag is set
+            if args.enrich and api_key:
+                cached_result = check_cache(ip, db_connection)
+                if cached_result:
+                    score, country = cached_result
+                else:
+                    score, country = get_ip_reputation(ip, api_key)
+                    update_cache(ip, score, country, db_connection)
+                    time.sleep(1)
 
-                        # 3. Save new result to cache
-                        update_cache(ip, score, country, db_connection)
+            # Check if the IP was flagged by the model
+            is_anomaly = ip in anomalous_ips
 
-                        # 4. Avoid abusing the API
-                        time.sleep(1)
+            # Append the final, fully-enriched data point for THIS IP
+            report_data.append((ip, data["total"], data["errors"], score, country, is_anomaly))
 
-                    report_data.append((ip, data["total"], data["errors"], score, country))
-        else:
-            # If enrichment is off, create a simple list
-            report_data = [(ip, data["total"], data["errors"], "N/A", "N/A") for ip, data in sorted_ips]
+        # --- END OF LOOP ---
 
-        # --- End of Enrichment Logic ---
-
-        # Pass the final report_data to the reporting functions
+        # Pass the complete report_data to the functions
         generate_report(report_data)
         if args.output:
             export_to_csv(report_data, args.output)
