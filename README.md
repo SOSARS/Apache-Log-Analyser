@@ -69,7 +69,7 @@ docker-compose run --rm app -f access.log --enrich -o report.csv
 ## 🌐🐳🧰 Run Directly from Docker Hub (For End-Users)
 This method allows you to run the application without cloning the source code, as long as you have Docker installed and an `access.log` file.
 ```bash
-docker run -v "C:\path\to\your\access.log:/app/access.log" sosars/log-analyser:1.0 -f access.log --enrich -o report.csv
+docker run -v "C:\path\to\your\access.log:/app/access.log" sosars/log-analyser:1.1 -f access.log --enrich -o report.csv
 ```
 
 * Remember to replace `C:\path\to\your\access.log` with the actual path to your log file.
