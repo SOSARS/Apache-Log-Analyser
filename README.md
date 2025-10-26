@@ -73,7 +73,7 @@ docker run -v "C:\path\to\your\access.log:/app/access.log" sosars/log-analyser:1
 ```
 
 * Remember to replace `C:\path\to\your\access.log` with the actual path to your log file.
-* The command will automatically find and download the `sosars/log-analyser:1.0` image from Docker Hub.
+* The command will automatically find and download the `sosars/log-analyser:1.1` image from Docker Hub.
 
 ---
 
