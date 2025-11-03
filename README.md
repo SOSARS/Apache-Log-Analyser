@@ -156,7 +156,7 @@ docker-compose.yml   → Container runtime configuration
 ```
 README.md            → Quick start and usage guide
 CASE_STUDY.md        → Complete technical analysis with performance metrics
-
+```
 ---
 
 ## 🙋🏽‍♂️ SOSARS' Note
