@@ -123,25 +123,45 @@ py log_analyser.py -f access.log --enrich -o report.csv (Windows)
 
 
 ## 🏗️ Architecture
+### Core Application
 ```
 access.log
    │
    ▼
-file_parser.py       → Parses log & counts IP activity
-anomaly_detector.py  → Uses scikit-learn model to find outlier IPs
+file_parser.py       → Parses log & extracts IP activity, paths, and status codes
+anomaly_detector.py  → Feature engineering + Isolation Forest with confidence scoring
 enrichment.py        → Checks cache → queries AbuseIPDB → updates DB
-reporting.py         → Displays CLI table / exports CSV
+reporting.py         → Displays CLI table / exports CSV with anomaly scores
 log_analyser.py      → Orchestrates CLI, enrichment, and reporting
 ip_cache.db          → Stores persistent threat intelligence
-Dockerfile           → Defines the recipe for the container image
-docker-compose.yml   → Configures the container runtime environment
-.github/workflows/   → Contains the automated CI/CD test workflow
 ```
 
+### Validation & Testing Infrastructure
+```
+generate_test_dataset.py  → Generates labeled attack scenarios and benign traffic
+measure_performance.py    → Calculates TPR/FPR against ground truth labels
+tune_threshold.py         → Systematic threshold optimisation analysis
+ground_truth_labels.csv   → Known attack/benign labels for validation
+test_dataset.log          → Synthetic Apache logs with realistic patterns
+```
+
+### Deployment & CI/CD
+```
+Dockerfile           → Container image definition
+docker-compose.yml   → Container runtime configuration
+.github/workflows/   → Automated CI/CD test workflow (pytest)
+```
+
+### Documentation
+```
+README.md            → Quick start and usage guide
+CASE_STUDY.md        → Complete technical analysis with performance metrics
+```
 ---
 
 ## 🙋🏽‍♂️ SOSARS' Note
-I'm just another security analyst playing my part in making the digital world a safer place for you & me. One commit at a time.
+"No one cares what you did **yesterday.** What have you done **today** to better yourself? What will your story be **tomorrow?**
+**Every day** is day one. Let's get it.
 
 ---
 
