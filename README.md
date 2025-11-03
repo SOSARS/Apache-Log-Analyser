@@ -145,6 +145,19 @@ ground_truth_labels.csv   → Known attack/benign labels for validation
 test_dataset.log          → Synthetic Apache logs with realistic patterns
 ```
 
+## 🎯 Sigma Detection Rules
+
+The `/sigma` directory contains detection rules for common attack patterns in Sigma format, compatible with major SIEM platforms (Splunk, ELK, QRadar).
+
+**Rules included:**
+- **Credential Stuffing:** 100+ failed logins in 5 minutes
+- **Vulnerability Scanning:** 50+ probes to admin/config paths
+- **Excessive Errors:** 80+ HTTP errors with >85% error rate
+
+These signature-based rules complement the ML-based anomaly detection, providing both fast detection of known attacks and discovery of novel threats.
+
+See [sigma/README.md](sigma/README.md) for usage instructions.
+
 ### Deployment & CI/CD
 ```
 Dockerfile           → Container image definition
