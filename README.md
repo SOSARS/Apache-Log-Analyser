@@ -4,18 +4,21 @@
 ---
 
 ## 🧠 Overview
-**PyLog Threat Analyser** is a Python command-line utility that scans Apache access logs, identifies potentially malicious IPs, and enriches them using the [AbuseIPDB](https://www.abuseipdb.com/) reputation API.
-It is designed to replicate the early stages of *threat triage* that a SOC (Security Operations Centre) analyst would perform — transforming raw logs into actionable intelligence.
+**PyLog Threat Analyser** is a Python command-line utility that scans Apache access logs and identifies threats using a dual-engine approach:
+1.  **Threat Intelligence:** Enriches IPs using the [AbuseIPDB](https://www.abuseipdb.com/) reputation API.
+2.  **Machine Learning:** Uses an Isolation Forest model to detect anomalous behaviour that might indicate unknown threats.
+
+It is designed to replicate the *threat triage* process of a SOC (Security Operations Centre) — transforming raw logs into actionable intelligence.
 
 ---
 
-## ⚙️ Features
-- **Log Parsing:** Reads Apache access logs, counts requests, and identifies HTTP error spikes (4xx/5xx).
-- **Threat Intelligence Enrichment:** Queries AbuseIPDB for IP reputation, country, and abuse confidence score.
-- **Persistent Caching:** Uses SQLite to store IP reputations, reducing API calls and improving runtime efficiency.
-- **Prioritised Reporting:** Sorts IPs by error volume or threat score for immediate visibility.
-- **Fully Containerised:** Ships with a `Dockerfile` and `docker-compose.yml` for a consistent, one-command runtime environment.
-- **Clean CLI Interface:** Built with `argparse`, supporting enrichment flags and CSV export.
+## 🏷️ Features
+- **Log Parsing:** Reads Apache logs, counts requests, and identifies HTTP error spikes.
+- **ML-Powered Anomaly Detection:** Uses a `scikit-learn` Isolation Forest model to find statistically unusual IP behaviour.
+- **Threat Intelligence Enrichment:** Queries AbuseIPDB for IP reputation and country of origin.
+- **Persistent Caching:** Uses SQLite to store API lookups, improving performance on subsequent runs.
+- **Fully Containerised:** Ships with a `Dockerfile` and is distributed via **Docker Hub**.
+- **Automated CI/CD:** Includes a GitHub Actions workflow to automatically run `pytest` unit tests on every commit.
 
 ---
 
@@ -23,11 +26,11 @@ It is designed to replicate the early stages of *threat triage* that a SOC (Secu
 | Category | Tools & Libraries |
 |-----------|-------------------|
 | Language | Python 3 |
-| Deployment | **Docker**, **Docker Compose** |
+| Deployment | **Docker**, **Docker Compose**, **Docker Hub** |
+| Machine Learning | **scikit-learn**, **pandas** |
+| Testing & CI/CD | **pytest**, **GitHub Actions** |
 | Core | `re`, `sqlite3`, `argparse`, `requests`, `dotenv` |
 | CLI & Output | `beautifultable`, `csv` |
-| Threat Intel | AbuseIPDB API |
-| Cache | SQLite |
 
 ---
 
@@ -66,11 +69,11 @@ docker-compose run --rm app -f access.log --enrich -o report.csv
 ## 🌐🐳🧰 Run Directly from Docker Hub (For End-Users)
 This method allows you to run the application without cloning the source code, as long as you have Docker installed and an `access.log` file.
 ```bash
-docker run -v "C:\path\to\your\access.log:/app/access.log" sosars/log-analyser:1.0 -f access.log --enrich -o report.csv
+docker run -v "C:\path\to\your\access.log:/app/access.log" sosars/log-analyser:1.1 -f access.log --enrich -o report.csv
 ```
 
 * Remember to replace `C:\path\to\your\access.log` with the actual path to your log file.
-* The command will automatically find and download the `sosars/log-analyser:1.0` image from Docker Hub.
+* The command will automatically find and download the `sosars/log-analyser:1.1` image from Docker Hub.
 
 ---
 
@@ -106,14 +109,14 @@ py log_analyser.py -f access.log --enrich -o report.csv (Windows)
 
 ## 🗃️ Example Output
 ```
------------------- [!] ATTACKER REPORT ------------------
-+-----------------+-----------------+--------+--------------+----------+
-| IP Address      | Total Requests  | Errors | Abuse Score  | Country  |
-+-----------------+-----------------+--------+--------------+----------+
-| 45.155.205.12   | 84              | 60     | 95           | RU       |
-| 102.45.19.56    | 10              | 8      | 0            | ZA       |
-| 173.248.16.77   | 4               | 3      | 70           | US       |
-+-----------------+-----------------+--------+--------------+----------+
+---------------------- [!] ATTACKER REPORT ----------------------
++-----------------+----------------+--------+-------------+---------+------------+
+| IP Address      | Total Requests | Errors | Abuse Score | Country | Is Anomaly |
++-----------------+----------------+--------+-------------+---------+------------+
+| 45.155.205.12   | 84             | 60     | 95          | RU      | Yes        |
+| 102.45.19.56    | 10             | 8      | 0           | ZA      | No         |
+| 173.248.16.77   | 4              | 3      | 70          | US      | Yes        |
++-----------------+----------------+--------+-------------+---------+------------+
 ```
 
 ---
@@ -125,18 +128,20 @@ access.log
    │
    ▼
 file_parser.py       → Parses log & counts IP activity
+anomaly_detector.py  → Uses scikit-learn model to find outlier IPs
 enrichment.py        → Checks cache → queries AbuseIPDB → updates DB
 reporting.py         → Displays CLI table / exports CSV
 log_analyser.py      → Orchestrates CLI, enrichment, and reporting
 ip_cache.db          → Stores persistent threat intelligence
 Dockerfile           → Defines the recipe for the container image
 docker-compose.yml   → Configures the container runtime environment
+.github/workflows/   → Contains the automated CI/CD test workflow
 ```
 
 ---
 
 ## 🙋🏽‍♂️ SOSARS' Note
-I'm building this as a security enthusiast on a journey to making the world a safer place to roam, one step at a time.
+I'm just another security analyst playing my part in making the digital world a safer place for you & me. One commit at a time.
 
 ---
 
