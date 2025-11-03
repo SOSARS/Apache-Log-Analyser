@@ -1,0 +1,31 @@
+title: Excessive HTTP Error Responses from Single IP
+id: 3c2b1a09-8f7e-6d5c-4b3a-2e1d0c9b8a7f
+status: test
+description: Detects suspicious activity patterns where a single IP generates an abnormally high rate of HTTP error responses, indicating potential attack probing or misconfigured automated tools
+author: SOSARS
+date: 03/11/2025
+logsource:
+  category: webserver
+  product: apache
+detection:
+  selection_client_errors:
+    sc-status:
+      - '400'
+      - '401'
+      - '403'
+      - '404'
+  selection_server_errors:
+    sc-status:
+      - '500'
+      - '502'
+      - '503'
+  timeframe: 5m
+  condition: (selection_client_errors or selection_server_errors) | count(c-ip) by c-ip > 80 and error_rate(c-ip) > 0.85
+falsepositives:
+  - Misconfigured API clients or integration scripts
+  - Mobile applications with outdated API endpoints
+  - Load testing or performance testing activities
+level: medium
+tags:
+  - attack.discovery
+  - attack.t1595      # Active Scanning
