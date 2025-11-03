@@ -8,3 +8,22 @@ venv/
 
 # Cache database
 ip_cache.db
+
+# Generated test data (large files)
+test_access.log
+test_dataset.log
+ground_truth_labels.csv
+
+# Generated reports
+*.csv
+report.csv
+final_threats_report.csv
+
+# IDE
+.idea/
+.vscode/
+```
+
+# OS
+.DS_Store
+Thumbs.db

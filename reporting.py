@@ -4,7 +4,7 @@ from beautifultable import BeautifulTable
 
 def export_to_csv(report_data, filepath):
     """Takes the enriched report data and writes it to a CSV file."""
-    fields = ["IP Address", "Total Requests", "Errors", "Abuse Score", "Country", "Is Anomaly"]
+    fields = ["IP Address", "Total Requests", "Errors", "Abuse Score", "Country", "Is Anomaly", "Confidence Score"]
 
     try:
         with open(filepath, "w", newline="", encoding="utf-8") as csv_file:
@@ -26,15 +26,16 @@ def generate_report(report_data):
 
     # Create the table and set the headers
     table = BeautifulTable()
-    table.columns.header = ["IP Address", "Total Requests", "Errors", "Abuse Score", "Country", "Is Anomaly"]
+    table.columns.header = ["IP Address", "Total Requests", "Errors", "Abuse Score", "Country", "Is Anomaly", "Confidence Score"]
     table.columns.alignment["IP Address"] = BeautifulTable.ALIGN_LEFT
 
     # Loop through the sorted data and add rows to the table
     for row in report_data:
         # Convert the boolean to a more readable string format
-        ip, total, errors, score, country, is_anomaly = row
+        ip, total, errors, score, country, is_anomaly, confidence = row
         anomaly_str = "Yes" if is_anomaly else "No"
-        table.rows.append([ip, total, errors, score, country, anomaly_str])
+        confidence_str = f"{confidence:.3f}"
+        table.rows.append([ip, total, errors, score, country, anomaly_str, confidence_str])
 
 
     # Print the final table

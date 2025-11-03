@@ -51,7 +51,7 @@ def main():
 
     if log_dict:
         # Run anomaly detection first to get the set of weird IPs
-        anomalous_ips = detect_anomalies(log_dict)
+        anomalous_ips, score_dict = detect_anomalies(log_dict, threshold=-0.05)
 
         # Sort the data after running the model
         sorted_ips = sorted(log_dict.items(), key=lambda item: item[1]["errors"], reverse=True)
@@ -75,9 +75,10 @@ def main():
 
             # Check if the IP was flagged by the model
             is_anomaly = ip in anomalous_ips
+            anomaly_score = score_dict.get(ip, 0.0)
 
             # Append the final, fully-enriched data point for THIS IP
-            report_data.append((ip, data["total"], data["errors"], score, country, is_anomaly))
+            report_data.append((ip, data["total"], data["errors"], score, country, is_anomaly, anomaly_score))
 
         # --- END OF LOOP ---
 
